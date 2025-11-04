@@ -5,65 +5,128 @@ from mensagens import MensagemTexto, MensagemVideo, MensagemFoto, MensagemArquiv
 # Importa 'List' para 'type hinting' (boa prática)
 from typing import List
 
+# --- PARTE 1: TESTE AUTOMÁTICO (O que você já tinha) ---
 def rodar_demonstracao():
-    """Função principal para executar a demonstração."""
+    """Função que roda todos os testes pré-definidos."""
     
-    # --- 1. Instanciando os Canais ---
-    # (Todos podem ser tratados como 'ICanal' graças ao polimorfismo)
+    print("=" * 40)
+    print("### INICIANDO DEMONSTRAÇÃO AUTOMÁTICA (TESTE) ###")
+    print("=" * 40 + "\n")
+
+    # Instanciando os canais
     canal_whatsapp = WhatsApp()
     canal_telegram = Telegram()
     canal_facebook = Facebook()
     canal_instagram = Instagram()
 
-    # --- 2. Instanciando as Mensagens ---
-    # (Todas podem ser tratadas como 'Mensagem' graças à herança)
+    # Instanciando as mensagens
     msg_texto = MensagemTexto("Olá! Este é o checkpoint II de POO.")
     msg_foto = MensagemFoto("Foto da equipe!", "equipe.jpg")
     msg_video = MensagemVideo("Tutorial de Python", "tutorial.mp4", "video/mp4", 300)
     msg_arquivo = MensagemArquivo("Documento de Requisitos", "requisitos.pdf", "application/pdf")
 
-    print("### INICIANDO DEMONSTRAÇÃO DE ENVIO ###\n")
-
-    # --- 3. Demonstração de Envio (Polimorfismo em Ação) ---
-    # O método .enviar() é o mesmo, mas a mensagem e o canal se comportam
-    # de forma diferente.
-
-    # A. WhatsApp (espera número)
+    # A. WhatsApp
     canal_whatsapp.enviar(msg_texto, "+5511999998888")
 
-    # B. Telegram (pode ser número ou usuário)
+    # B. Telegram
     canal_telegram.enviar(msg_video, "@usuario_telegram")
-    canal_telegram.enviar(msg_texto, "+5511911112222") # Telegram também aceita número
-
-    # C. Facebook (espera usuário)
+    
+    # C. Facebook
     canal_facebook.enviar(msg_foto, "usuario.facebook.123")
 
-    # D. Instagram (espera usuário)
-    canal_instagram.enviar(msg_foto, "user.insta") # Instagram envia foto
-    canal_instagram.enviar(msg_arquivo, "outro.user.insta") # Instagram envia "arquivo" (ex: DM)
+    # D. Instagram
+    canal_instagram.enviar(msg_arquivo, "outro.user.insta")
+    
+    print("\n### FIM DA DEMONSTRAÇÃO AUTOMÁTICA ###")
+    print("=" * 40 + "\n")
 
 
-    # --- 4. Demonstração Avançada (Polimorfismo) ---
-    # Podemos tratar todos os canais da mesma forma,
-    # sem saber qual é qual, graças à interface ICanal.
+# --- PARTE 2: MENU INTERATIVO (Novo) ---
+def menu_interativo():
+    """Função que mostra um menu para o usuário escolher o que enviar."""
+    
+    print("=" * 40)
+    print("### INICIANDO MODO INTERATIVO ###")
+    print("=" * 40 + "\n")
 
-    print("\n\n### DEMONSTRAÇÃO DE POLIMORFISMO AVANÇADO ###")
-    print("Enviando uma mensagem de arquivo para TODOS os canais.")
+    # Instanciamos os canais que o menu pode usar
+    canais = {
+        "1": WhatsApp(),
+        "2": Telegram(),
+        "3": Facebook(),
+        "4": Instagram()
+    }
 
-    # Criamos uma lista do tipo ICanal
-    todos_os_canais: List[ICanal] = [canal_whatsapp, canal_telegram, canal_facebook, canal_instagram]
-    destinatarios = ["+551155555", "@admin_grupo", "fb.suporte", "ig.suporte"]
+    while True:
+        # 1. Pergunta o Canal
+        print("Para qual canal você quer enviar mensagem?")
+        print("  1: WhatsApp")
+        print("  2: Telegram")
+        print("  3: Facebook")
+        print("  4: Instagram")
+        print("  0: Sair")
+        
+        escolha_canal = input("Escolha o canal (0 para Sair): ")
 
-    # O loop não se importa se o canal é WhatsApp ou Facebook,
-    # ele apenas chama .enviar() (Polimorfismo)
-    for i, canal in enumerate(todos_os_canais):
-        canal.enviar(msg_arquivo, destinatarios[i])
+        if escolha_canal == "0":
+            print("\nObrigado por usar o sistema! Saindo...")
+            break
+        
+        if escolha_canal not in canais:
+            print("\nOpção inválida! Tente novamente.\n")
+            continue
+        
+        # Seleciona o objeto do canal (Polimorfismo!)
+        canal_selecionado = canais[escolha_canal]
+        
+        # 2. Pergunta o Destinatário
+        destinatario = input(f"Digite o destinatário para {canal_selecionado.__class__.__name__}: ")
+        
+        # 3. Pergunta o tipo de Mensagem
+        print("\nQual tipo de mensagem?")
+        print("  1: Texto")
+        print("  2: Foto")
+        print("  3: Vídeo")
+        print("  4: Arquivo")
+        
+        escolha_tipo = input("Escolha o tipo de mensagem: ")
+        texto_base = input("Digite o texto principal da mensagem: ")
+        
+        mensagem_para_enviar = None
 
-    print("### FIM DA DEMONSTRAÇÃO ###")
+        # Cria o objeto de mensagem correto (Polimorfismo!)
+        if escolha_tipo == "1":
+            mensagem_para_enviar = MensagemTexto(texto_base)
+        elif escolha_tipo == "2":
+            # Usamos nomes de arquivo fixos para simplificar o menu
+            mensagem_para_enviar = MensagemFoto(texto_base, "foto_interativa.jpg")
+        elif escolha_tipo == "3":
+            mensagem_para_enviar = MensagemVideo(texto_base, "video_interativo.mp4", "video/mp4", 60)
+        elif escolha_tipo == "4":
+            mensagem_para_enviar = MensagemArquivo(texto_base, "documento_interativo.pdf", "app/pdf")
+        else:
+            print("\nTipo inválido. Enviando como texto simples.")
+            mensagem_para_enviar = MensagemTexto(texto_base)
+            
+        # 4. Envia a Mensagem
+        # Graças ao Polimorfismo, não importa qual canal ou qual mensagem
+        # foi escolhida, o método .enviar() simplesmente funciona.
+        try:
+            canal_selecionado.enviar(mensagem_para_enviar, destinatario)
+            print("--- Mensagem enviada com sucesso! --- \n")
+        except Exception as e:
+            print(f"Erro ao enviar: {e}\n")
 
 
 # --- Ponto de entrada do script ---
 # Bloco padrão para garantir que o script só rode quando executado diretamente
-# (e não quando importado por outro script)
 if __name__ == "__main__":
+    
+    # 1. Roda o teste automático primeiro
     rodar_demonstracao()
+    
+    # 2. Pergunta se quer entrar no modo interativo
+    input("... Pressione ENTER para continuar para o Menu Interativo ...")
+    
+    # 3. Inicia o menu
+    menu_interativo()
