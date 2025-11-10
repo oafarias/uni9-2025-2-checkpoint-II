@@ -122,11 +122,29 @@ def menu_interativo():
 # Bloco padrão para garantir que o script só rode quando executado diretamente
 if __name__ == "__main__":
     
-    # 1. Roda o teste automático primeiro
-    rodar_demonstracao()
-    
-    # 2. Pergunta se quer entrar no modo interativo
-    input("... Pressione ENTER para continuar para o Menu Interativo ...")
-    
-    # 3. Inicia o menu
-    menu_interativo()
+    # Loop para garantir que o usuário escolha 1 ou 2
+    while True:
+        print("Sistema de mensagens pronto.")
+        print("-----")
+        print("Pressione 1 para varrer o sistema (rodar testes).")
+        print("-----")
+        print("Pressione 2 para iniciar sem a varredura.")
+        
+        escolha_inicial = input("Sua escolha: ")
+        
+        if escolha_inicial == "1":
+            # 1. Roda o teste automático primeiro
+            rodar_demonstracao()
+            
+            # 2. Inicia o menu interativo
+            menu_interativo()
+            break # Sai do loop de inicialização
+            
+        elif escolha_inicial == "2":
+            # 1. Pula os testes e vai direto para o menu
+            menu_interativo()
+            break # Sai do loop de inicialização
+            
+        else:
+            print("\nOpção inválida! Pressione apenas '1' ou '2'.\n")
+            # O loop vai repetir a pergunta
